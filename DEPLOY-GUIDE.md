@@ -16,7 +16,7 @@ git commit -m "Projeto limpo e preparado para deploy"
 - Crie um novo repositório (ex: `agenda-medicao-backend`)
 - Conecte o repositório local:
 ```bash
-git remote add origin https://github.com/seu-usuario/agenda-medicao-backend.git
+git remote add origin https://github.com/vvalmir-silva/agenda-medicao-backend.git
 git branch -M main
 git push -u origin main
 ```
