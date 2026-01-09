@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Fundo -->
+  <rect x="0" y="0" width="512" height="512" rx="96" fill="#0A2E5C"></rect>
+
+  <!-- Calendário -->
+  <rect x="112" y="96" width="224" height="224" rx="32" fill="#FFFFFF"></rect>
+  <rect x="112" y="96" width="224" height="64" rx="32" fill="#2ECC71"></rect>
+
+  <!-- Check -->
+  <path d="M176 216 L224 272 L304 184" stroke="#2ECC71" stroke-width="32" fill="none" stroke-linecap="round" stroke-linejoin="round"></path>
+
+  <!-- Pin de localização -->
+  <path d="M256 320
+           C256 320 320 368 320 416
+           A64 64 0 1 1 192 416
+           C192 368 256 320 256 320Z" fill="#1ABC9C"></path>
+
+  <circle cx="256" cy="384" r="24" fill="#0A2E5C"></circle>
+</svg>

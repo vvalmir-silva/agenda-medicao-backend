@@ -1,0 +1,1640 @@
+<!DOCTYPE html><html lang="pt-BR"><head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Agenda Medição - Sistema de Agendamentos Rodrigo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="styles.css"/>
+    <script src="script.js"></script>
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="AgendarMedição - Sistema de Agendamentos"/>
+    <meta property="og:description" content="Sistema profissional para agendamento de medições com dashboard e CRUD completo"/>
+    <meta property="og:url" content="https://www.onspace.ai"/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:site_name" content="OnSpace.AI"/>
+    <meta property="og:image" content="https://cdn-ai.onspace.ai/onspace/project/screenshot/pre-site/9b1u0c.jpg"/>
+    <meta property="og:image:width" content="1200"/>
+    <meta property="og:image:height" content="630"/>
+    <!-- API base (set to your backend when deploying) -->
+    <meta name="api-base" content="http://localhost:3000/api">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image"/>
+    <meta name="twitter:title" content="AgendarMedição - Sistema de Agendamentos"/>
+    <meta name="twitter:description" content="Sistema profissional para agendamento de medições com dashboard e CRUD completo"/>
+    <meta name="twitter:image" content="https://cdn-ai.onspace.ai/onspace/project/screenshot/pre-site/9b1u0c.jpg"/>
+    <meta name="twitter:url" content="https://www.onspace.ai"/>
+    <!-- Favicon -->
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="/favicon-32.svg" type="image/svg+xml" sizes="32x32">
+    <link rel="icon" href="/favicon-16.svg" type="image/svg+xml" sizes="16x16">
+    <link rel="apple-touch-icon" href="/favicon.svg">
+    <meta name="theme-color" content="#0A2E5C" />
+    
+</head>
+<body class="bg-gradient-to-br from-gray-50 to-purple-50 min-h-screen">
+    <!-- Login Screen -->
+    <div id="login-screen" class="fixed inset-0 bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center z-50">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md mx-4">
+            <div class="text-center mb-8">
+                <i class="fas fa-ruler-combined text-4xl text-purple-600 mb-4"></i>
+                <h1 class="text-2xl font-bold text-gray-800">Agenda Medição Rodrigo</h1>
+                <p class="text-gray-600 mt-2">Entre com suas credenciais</p>
+            </div>
+            
+            <form id="login-form" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-user mr-2 text-purple-600"></i>Usuário
+                    </label>
+                    <input type="text" id="username" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:ring focus:ring-purple-200 transition-all text-center"/>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-lock mr-2 text-purple-600"></i>Senha
+                    </label>
+                    <input type="password" id="password" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:ring focus:ring-purple-200 transition-all text-center"/>
+                </div>
+                
+                <button type="submit" class="btn btn-primary w-full">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>Entrar</span>
+                </button>
+            </form>
+            
+            <div id="login-error" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onclick="if(event.target === this) closeLoginError()">
+        <div class="bg-white rounded-lg shadow-xl p-6 max-w-sm mx-4 transform transition-all duration-300 scale-95" onclick="event.stopPropagation()">
+            <div class="flex items-center mb-4">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-exclamation-triangle text-red-500 text-xl"></i>
+                </div>
+                <div class="ml-3">
+                    <h3 class="text-lg font-medium text-gray-900">Erro de Autenticação</h3>
+                    <p class="mt-1 text-sm text-gray-500">Usuário e/ou senha inválidos</p>
+                </div>
+            </div>
+            <div class="flex justify-end">
+                <button onclick="closeLoginError()" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors text-sm font-medium">
+                    Tentar Novamente
+                </button>
+            </div>
+        </div>
+    </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="main-content" class="hidden">
+    <!-- Navigation -->
+    <nav class="navbar-modern">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center">
+                <!-- Logo -->
+                <div class="flex items-center space-x-3">
+                    <div class="logo-container">
+                        <img src="/logotipo.png" alt="Agenda Medição Rodrigo" class="h-10 w-10 object-contain">
+                    </div>
+                    <div class="brand-text">
+                        <h1 class="text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                            Agenda Medição
+                        </h1>
+                        <span class="text-xs text-gray-500 hidden sm:inline">Agenda Rodrigo</span>
+                    </div>
+                </div>
+                
+                <!-- Navigation Desktop -->
+                <nav class="hidden md:flex items-center space-x-2">
+                    <a href="#" onclick="showSection('dashboard')" class="nav-item active" id="nav-dashboard">
+                        <div class="nav-icon">
+                            <i class="fas fa-tachometer-alt"></i>
+                        </div>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="#" onclick="showSection('list')" class="nav-item" id="nav-list">
+                        <div class="nav-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <span>Agendamentos</span>
+                    </a>
+                    <a href="#" onclick="showSection('form')" class="nav-item" id="nav-form">
+                        <div class="nav-icon">
+                            <i class="fas fa-plus-circle"></i>
+                        </div>
+                        <span>Novo</span>
+                    </a>
+                    <div class="nav-divider"></div>
+                    <a href="#" onclick="logout()" class="nav-item logout-item">
+                        <div class="nav-icon">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </div>
+                        <span>Sair</span>
+                    </a>
+                </nav>
+                
+                <!-- Mobile Menu Button -->
+                <button onclick="toggleMobileMenu()" class="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors">
+                    <i class="fas fa-bars text-xl text-gray-700"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100">
+            <div class="container mx-auto px-4 py-4">
+                <!-- Logo no menu mobile -->
+                <div class="flex items-center space-x-3 pb-4 border-b border-gray-100 mb-4">
+                    <div class="logo-container">
+                        <img src="/logotipo.png" alt="Agenda Medição Rodrigo" class="h-10 w-10 object-contain">
+                    </div>
+                    <div class="brand-text">
+                        <h3 class="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                            Agenda Medição
+                        </h3>
+                        <span class="text-xs text-gray-500">Sistema Profissional</span>
+                    </div>
+                </div>
+                
+                <!-- Navigation Items Mobile -->
+                <div class="space-y-2">
+                    <a href="#" onclick="showSection('dashboard'); toggleMobileMenu()" class="mobile-nav-item">
+                        <div class="mobile-nav-icon">
+                            <i class="fas fa-tachometer-alt text-blue-500"></i>
+                        </div>
+                        <div class="mobile-nav-content">
+                            <span class="font-medium">Dashboard</span>
+                            <span class="text-xs text-gray-500">Visão geral</span>
+                        </div>
+                    </a>
+                    <a href="#" onclick="showSection('list'); toggleMobileMenu()" class="mobile-nav-item">
+                        <div class="mobile-nav-icon">
+                            <i class="fas fa-calendar-check text-green-500"></i>
+                        </div>
+                        <div class="mobile-nav-content">
+                            <span class="font-medium">Agendamentos</span>
+                            <span class="text-xs text-gray-500">Gerenciar</span>
+                        </div>
+                    </a>
+                    <a href="#" onclick="showSection('form'); toggleMobileMenu()" class="mobile-nav-item">
+                        <div class="mobile-nav-icon">
+                            <i class="fas fa-plus-circle text-purple-500"></i>
+                        </div>
+                        <div class="mobile-nav-content">
+                            <span class="font-medium">Novo Agendamento</span>
+                            <span class="text-xs text-gray-500">Criar</span>
+                        </div>
+                    </a>
+                    <div class="border-t border-gray-100 pt-2 mt-2">
+                        <a href="#" onclick="logout(); toggleMobileMenu()" class="mobile-nav-item logout-item">
+                            <div class="mobile-nav-icon">
+                                <i class="fas fa-sign-out-alt text-red-500"></i>
+                            </div>
+                            <div class="mobile-nav-content">
+                                <span class="font-medium text-red-600">Sair</span>
+                                <span class="text-xs text-gray-500">Encerrar sessão</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
+        <!-- Formulário de Agendamento -->
+        <section id="form-section" class="section fade-in">
+            <div class="bg-white rounded-xl sm:rounded-2xl shadow-xl p-4 sm:p-6 lg:p-8 glass-effect hover-scale">
+                <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800 mb-6 sm:mb-8 text-center">
+                    <i class="fas fa-calendar-plus text-primary mr-2 sm:mr-3"></i>
+                    <span class="block sm:inline">Novo Agendamento de Medição</span>
+                </h2>
+                
+                <form id="agendamento-form" class="space-y-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                        <!-- Nome Cliente -->
+                        <div class="sm:col-span-2 md:col-span-1">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-user mr-2 text-primary"></i>Nome do Cliente*
+                            </label>
+                            <input type="text" id="nome-cliente" required="" class="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:ring focus:ring-purple-200 transition-all"/>
+                        </div>
+
+                        <!-- Telefone -->
+                        <div class="sm:col-span-2 md:col-span-1">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-phone mr-2 text-primary"></i>Telefone*
+                            </label>
+                            <input type="tel" id="telefone" required="" placeholder="(11) 99999-9999" class="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:ring focus:ring-purple-200 transition-all"/>
+                        </div>
+
+                        <!-- E-mail -->
+                        <div class="sm:col-span-2 md:col-span-1">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-envelope mr-2 text-primary"></i>E-mail*
+                            </label>
+                            <input type="email" id="email" required="" placeholder="exemplo@email.com" class="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:ring focus:ring-purple-200 transition-all"/>
+                        </div>
+
+                        <!-- Tipo de Imóvel -->
+                        <div class="sm:col-span-2 md:col-span-1">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-building mr-2 text-primary"></i>Tipo de Imóvel*
+                            </label>
+                            <select id="tipo-imovel" required="" onchange="updateAmbientes()" class="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:ring focus:ring-purple-200 transition-all">
+                                <option value="">Selecione o tipo</option>
+                                <option value="casa">Casa</option>
+                                <option value="apartamento">Apartamento</option>
+                            </select>
+                        </div>
+
+                        <!-- Ambiente -->
+                        <div class="sm:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-home mr-2 text-primary"></i>Ambientes* (Múltipla Escolha)
+                            </label>
+                            <div class="relative">
+                                <div class="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg focus-within:border-purple-500 focus-within:ring focus-within:ring-purple-200 transition-all bg-white min-h-[44px] cursor-pointer" id="ambiente-container" onclick="toggleAmbienteDropdown()">
+                                    <div id="ambiente-selected" class="text-gray-500">Primeiro selecione o tipo de imóvel</div>
+                                </div>
+                                <div id="ambiente-dropdown" class="hidden absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                                    <!-- Options será preenchido via JavaScript -->
+                                </div>
+                            </div>
+                            <input type="hidden" id="ambiente" name="ambiente"/>
+                        </div>
+
+                        <!-- Loja -->
+                        <div class="sm:col-span-2 md:col-span-1">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-store mr-2 text-primary"></i>Loja*
+                            </label>
+                            <select id="loja" required="" class="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:ring focus:ring-purple-200 transition-all">
+                                <option value="">Selecione a loja</option>
+                                <option value="Diana D1">Diana D1</option>
+                                <option value="Diana D2">Diana D2</option>
+                                <option value="Diana D3">Diana D3</option>
+                                <option value="Diana D4">Diana D4</option>
+                                <option value="Marquise Planejados">Marquise Planejados</option>
+                                <option value="By Estilo">By Estilo</option>
+                                <option value="Anfelle">Anfelle</option>
+                                <option value="Planejados">Planejados</option>
+                                <option value="Rassul Planejados">Rassul Planejados</option>
+                                <option value="Miralli Móveis">Miralli Móveis</option>
+                                <option value="Outros">Outros</option>
+                            </select>
+                        </div>
+
+                                                <!-- Data -->
+                        <div class="sm:col-span-1">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-calendar mr-2 text-primary"></i>Data*
+                            </label>
+                            <input type="date" id="data" required="" onchange="updateAgendamentoDateTime()" class="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:ring focus:ring-purple-200 transition-all"/>
+                        </div>
+
+                        <!-- Horário -->
+                        <div class="sm:col-span-1">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-clock mr-2 text-primary"></i>Horário*
+                            </label>
+                            <input type="time" id="horario" required="" onchange="updateAgendamentoDateTime()" class="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:ring focus:ring-purple-200 transition-all"/>
+                        </div>
+
+                                                <!-- Horário do Agendamento (Readonly) -->
+                        <div class="sm:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-calendar-check mr-2 text-primary"></i>Horário do Agendamento (Gerado Automaticamente)
+                            </label>
+                            <input type="text" id="horario-agendamento" readonly="" disabled="" placeholder="Selecione data e horário acima" class="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg bg-gray-100 text-gray-500 cursor-not-allowed"/>
+                        </div>
+                    </div>
+
+                    <!-- CEP e Endereço -->
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div class="sm:col-span-1">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="fas fa-map-pin mr-2 text-primary"></i>CEP*
+                                </label>
+                                <input type="text" id="cep" required="" placeholder="00000-000" onblur="buscarEndereco()" class="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:ring focus:ring-purple-200 transition-all"/>
+                            </div>
+                            <div class="sm:col-span-1 lg:col-span-1">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Número*</label>
+                                <input type="text" id="numero" required="" placeholder="123" class="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:ring focus:ring-purple-200 transition-all"/>
+                            </div>
+                            <div class="sm:col-span-2 lg:col-span-1">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Complemento</label>
+                                <input type="text" id="complemento" placeholder="Apto 45, Bloco B" class="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:ring focus:ring-purple-200 transition-all"/>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-3 gap-4">
+                            <div class="lg:col-span-1">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Logradouro*</label>
+                                <input type="text" id="logradouro" required="" readonly="" class="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg bg-gray-50"/>
+                            </div>
+                            <div class="lg:col-span-1">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Bairro*</label>
+                                <input type="text" id="bairro" required="" readonly="" class="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg bg-gray-50"/>
+                            </div>
+                            <div class="lg:col-span-1">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Cidade*</label>
+                                <input type="text" id="cidade" required="" readonly="" class="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg bg-gray-50"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Observação -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-sticky-note mr-2 text-primary"></i>Observações
+                        </label>
+                        <textarea id="observacao" rows="3" class="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:ring focus:ring-purple-200 transition-all resize-none" placeholder="Informações adicionais sobre o agendamento..."></textarea>
+                    </div>
+
+                    <!-- Status (hidden field, default: agendado) -->
+                    <input type="hidden" id="status" value="agendado"/>
+
+                    <div class="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 pt-6">
+                        <button type="submit" class="btn btn-primary w-full sm:w-auto">
+                            <i class="fas fa-save"></i>
+                            <span>Salvar Agendamento</span>
+                        </button>
+                        <button type="button" onclick="limparFormulario()" class="btn btn-secondary w-full sm:w-auto">
+                            <i class="fas fa-eraser"></i>
+                            <span>Limpar</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Dashboard -->
+        <section id="dashboard-section" class="section hidden">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6 mb-6 sm:mb-8">
+                <div class="dashboard-card">
+                    <div class="flex items-center justify-between">
+                        <div class="min-w-0 flex-1">
+                            <h3>Total Agendamentos</h3>
+                            <p class="value" id="total-agendamentos">0</p>
+                        </div>
+                        <div class="p-2 sm:p-3 bg-blue-100 rounded-full flex-shrink-0 ml-2">
+                            <i class="fas fa-calendar-alt text-blue-600 text-sm sm:text-lg lg:text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="dashboard-card">
+                    <div class="flex items-center justify-between">
+                        <div class="min-w-0 flex-1">
+                            <h3>Agendados</h3>
+                            <p class="value text-warning" id="total-agendados">0</p>
+                        </div>
+                        <div class="p-2 sm:p-3 bg-yellow-100 rounded-full flex-shrink-0 ml-2">
+                            <i class="fas fa-trophy text-purple-600 text-sm sm:text-lg lg:text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="dashboard-card">
+                    <div class="flex items-center justify-between">
+                        <div class="min-w-0 flex-1">
+                            <h3>Concluídos</h3>
+                            <p class="value text-success" id="total-concluidos">0</p>
+                        </div>
+                        <div class="p-2 sm:p-3 bg-green-100 rounded-full flex-shrink-0 ml-2">
+                            <i class="fas fa-check-circle text-green-600 text-sm sm:text-lg lg:text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gráfico -->
+            <div class="bg-white p-4 sm:p-6 rounded-lg sm:rounded-xl shadow-lg mb-6">
+                <h3 class="text-lg sm:text-xl font-bold text-gray-800 mb-4">Agendamentos por Status</h3>
+                <div class="relative h-64 sm:h-80">
+                    <canvas id="statusChart" class="w-full h-full"></canvas>
+                </div>
+            </div>
+
+            <!-- Detalhes por Status -->
+            <div class="bg-white rounded-lg shadow-lg p-4 mb-6">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
+                    <h3 class="text-lg font-bold text-gray-800 mb-2 sm:mb-0">Detalhes dos Agendamentos</h3>
+                    <div class="flex gap-2 flex-wrap">
+                        <select id="dashboard-filter" class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:border-purple-500 focus:ring focus:ring-purple-200">
+                            <option value="all">Todos os períodos</option>
+                            <option value="today">Hoje</option>
+                            <option value="week">Esta semana</option>
+                            <option value="month">Este mês</option>
+                        </select>
+                        <select id="status-filter" class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:border-purple-500 focus:ring focus:ring-purple-200">
+                            <option value="all">Todos os status</option>
+                            <option value="agendado">Agendados</option>
+                            <option value="concluido">Concluídos</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Agendados -->
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="text-md font-semibold text-gray-800 flex items-center">
+                                <i class="fas fa-clock text-yellow-600 mr-2"></i>
+                                Agendados
+                            </h4>
+                            <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-sm font-medium" id="count-agendados">0</span>
+                        </div>
+                        <div class="space-y-3 max-h-96 overflow-y-auto" id="lista-agendados">
+                            <div class="text-center text-gray-500 py-4">
+                                <i class="fas fa-spinner fa-spin text-xl mb-2"></i>
+                                <p>Carregando...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Concluídos -->
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="text-md font-semibold text-gray-800 flex items-center">
+                                <i class="fas fa-check-circle text-green-600 mr-2"></i>
+                                Concluídos
+                            </h4>
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm font-medium" id="count-concluidos">0</span>
+                        </div>
+                        <div class="space-y-3 max-h-96 overflow-y-auto" id="lista-concluidos">
+                            <div class="text-center text-gray-500 py-4">
+                                <i class="fas fa-spinner fa-spin text-xl mb-2"></i>
+                                <p>Carregando...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Roteiro Otimizado do Dia -->
+            <div class="bg-white rounded-lg shadow-lg p-4 mb-6">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
+                    <h3 class="text-lg font-bold text-gray-800 mb-2 sm:mb-0 flex items-center">
+                        <i class="fas fa-route text-blue-600 mr-2"></i>
+                        Roteiro Otimizado de Hoje
+                        <span class="text-sm font-normal text-gray-600 ml-2">(1º agendamento fixo → próximos otimizados)</span>
+                    </h3>
+                    <div class="flex gap-2">
+                        <button onclick="atualizarRoteiroHoje()" class="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium transition-all flex items-center">
+                            <i class="fas fa-sync-alt mr-2"></i>
+                            Atualizar Roteiro
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="space-y-3" id="roteiro-hoje">
+                    <div class="text-center text-gray-500 py-8">
+                        <i class="fas fa-route text-3xl mb-2"></i>
+                        <p class="text-sm">Carregando roteiro do dia...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Roteiros dos Próximos Dias -->
+            <div class="bg-white rounded-lg shadow-lg p-4 mb-6">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
+                    <h3 class="text-lg font-bold text-gray-800 mb-2 sm:mb-0 flex items-center">
+                        <i class="fas fa-calendar-week text-purple-600 mr-2"></i>
+                        Roteiros dos Próximos Dias
+                        <span class="text-sm font-normal text-gray-600 ml-2">(planejamento semanal)</span>
+                    </h3>
+                    <div class="flex gap-2">
+                        <button onclick="atualizarRoteirosProximosDias()" class="px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-sm font-medium transition-all flex items-center">
+                            <i class="fas fa-sync-alt mr-2"></i>
+                            Atualizar Tudo
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="space-y-4" id="roteiros-proximos-dias">
+                    <div class="text-center text-gray-500 py-8">
+                        <i class="fas fa-calendar-week text-3xl mb-2"></i>
+                        <p class="text-sm">Carregando roteiros dos próximos dias...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Lista de Agendamentos -->
+        <section id="list-section" class="section hidden">
+            <div class="bg-white rounded-xl sm:rounded-2xl shadow-xl p-4 sm:p-6 lg:p-8">
+                <!-- Filtros -->
+                <div class="mb-4 sm:mb-6 p-3 sm:p-4 bg-gray-50 rounded-lg">
+                    <div class="max-w-md">
+                        <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-2">Buscar:</label>
+                        <div class="relative">
+                            <input type="text" id="busca-geral" placeholder="Buscar por nome, endereço, telefone, email, loja..." 
+                                   class="w-full px-3 py-2 pl-10 text-sm border border-gray-300 rounded-lg focus:border-purple-500 focus:ring focus:ring-purple-200"/>
+                            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-4">
+                    <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800">
+                        <i class="fas fa-list mr-2 sm:mr-3 text-custom-purple"></i>
+                        <span class="block sm:inline">Agendamentos Pendentes</span>
+                    </h2>
+                    
+                    <!-- Ações em lote -->
+                    <div class="flex flex-wrap gap-2 w-full sm:w-auto">
+                        <button onclick="deleteSelected()" class="px-3 sm:px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-xs sm:text-sm font-medium transition-all flex items-center justify-center">
+                            <i class="fas fa-trash mr-1 sm:mr-2"></i>
+                            <span class="hidden sm:inline">Excluir Selecionados</span>
+                            <span class="sm:hidden">Excluir</span>
+                        </button>
+                        <button onclick="exportData()" class="px-3 sm:px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-xs sm:text-sm font-medium transition-all flex items-center justify-center">
+                            <i class="fas fa-download mr-1 sm:mr-2"></i>
+                            <span class="hidden sm:inline">Exportar</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Controles de seleção -->
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
+                    <div class="flex items-center gap-3">
+                        <input type="checkbox" id="select-all" onchange="toggleSelectAll()" class="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"/>
+                        <label for="select-all" class="text-sm font-medium text-gray-700">
+                            Selecionar todos (<span id="selected-count">0</span>)
+                        </label>
+                    </div>
+                    <div class="text-xs sm:text-sm text-gray-600">
+                        Mostrando <span id="showing-count">0</span> de <span id="total-count">0</span> agendamentos
+                    </div>
+                </div>
+
+                <!-- Tabela responsiva -->
+                <div class="overflow-x-auto -mx-2 sm:-mx-4">
+                    <div class="inline-block min-w-full align-middle">
+                        <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+                            <table class="min-w-full divide-y divide-gray-300">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 w-8">
+                                            <input type="checkbox" id="header-select-all" onchange="toggleSelectAll()" class="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"/>
+                                        </th>
+                                        <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-semibold text-gray-600">Cliente</th>
+                                        <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 hidden sm:table-cell">Data/Hora</th>
+                                        <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 hidden md:table-cell">Endereço</th>
+                                        <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 hidden lg:table-cell">Loja</th>
+                                        <th class="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-semibold text-gray-600">Status</th>
+                                        <th class="px-2 sm:px-4 py-2 sm:py-3 text-center text-xs sm:text-sm font-semibold text-gray-600 min-w-[80px]">Ações</th>
+                                    </tr>
+                                </thead>
+                        <tbody id="agendamentos-list" class="bg-white divide-y divide-gray-200">
+                            <!-- Conteúdo será inserido via JavaScript -->
+                        </tbody>
+                    </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Paginação -->
+                <div class="flex flex-col sm:flex-row justify-between items-center mt-6 gap-4">
+                    <div class="text-xs sm:text-sm text-gray-600">
+                        Página <span id="current-page">1</span> de <span id="total-pages">1</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <button id="prev-btn" onclick="previousPage()" class="pagination-btn px-3 py-2 text-xs sm:text-sm bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                            <i class="fas fa-chevron-left mr-1"></i>Anterior
+                        </button>
+                        <button id="next-btn" onclick="nextPage()" class="pagination-btn px-3 py-2 text-xs sm:text-sm bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                            Próxima<i class="fas fa-chevron-right ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Mensagem quando não há agendamentos -->
+                <div id="no-agendamentos" class="text-center py-6 sm:py-8 hidden">
+                    <i class="fas fa-calendar-times text-2xl sm:text-4xl text-gray-400 mb-3 sm:mb-4"></i>
+                    <p class="text-sm sm:text-base text-gray-500">Nenhum agendamento encontrado</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Modal para criar/editar agendamento -->
+    <div id="create-edit-modal" class="fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center p-2 sm:p-4 z-50 modal">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl mx-2 sm:mx-4 max-h-[95vh] sm:max-h-[90vh] overflow-hidden modal-content transform transition-all duration-300 scale-95 opacity-0">
+            <!-- Header do Modal -->
+            <div class="modal-header">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-xl font-bold flex items-center">
+                        <i class="fas fa-calendar-edit mr-3"></i>
+                        <span id="modal-title">Novo Agendamento</span>
+                    </h3>
+                    <button onclick="closeCreateEditModal()" class="text-white hover:text-gray-200 transition-colors p-2 hover:bg-white hover:bg-opacity-20 rounded-lg">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Body do Modal -->
+            <div class="modal-body overflow-y-auto max-h-[calc(90vh-80px)]">
+                <form id="create-edit-form" class="space-y-6">
+                    <input type="hidden" id="modal-id"/>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Nome Cliente -->
+                        <div class="md:col-span-2 lg:col-span-1">
+                            <label class="form-label">
+                                <i class="fas fa-user mr-2 text-primary"></i>Nome do Cliente*
+                            </label>
+                            <input type="text" id="modal-nome" required class="form-control" placeholder="Digite o nome completo">
+                        </div>
+
+                        <!-- Telefone -->
+                        <div class="md:col-span-2 lg:col-span-1">
+                            <label class="form-label">
+                                <i class="fas fa-phone mr-2 text-primary"></i>Telefone*
+                            </label>
+                            <input type="tel" id="modal-telefone" required class="form-control" placeholder="(11) 99999-9999">
+                        </div>
+
+                        <!-- E-mail -->
+                        <div class="md:col-span-2 lg:col-span-1">
+                            <label class="form-label">
+                                <i class="fas fa-envelope mr-2 text-primary"></i>E-mail*
+                            </label>
+                            <input type="email" id="modal-email" required class="form-control" placeholder="exemplo@email.com">
+                        </div>
+
+                        <!-- Tipo de Imóvel -->
+                        <div class="md:col-span-2 lg:col-span-1">
+                            <label class="form-label">
+                                <i class="fas fa-building mr-2 text-primary"></i>Tipo de Imóvel*
+                            </label>
+                            <select id="modal-tipo-imovel" required onchange="updateModalAmbientes()" class="form-control">
+                                <option value="">Selecione o tipo</option>
+                                <option value="casa">Casa</option>
+                                <option value="apartamento">Apartamento</option>
+                            </select>
+                        </div>
+
+                        <!-- Ambiente -->
+                        <div class="md:col-span-2">
+                            <label class="form-label">
+                                <i class="fas fa-home mr-2 text-primary"></i>Ambientes* (Múltipla Escolha)
+                            </label>
+                            <div class="relative">
+                                <div class="form-control cursor-pointer flex items-center justify-between" id="modal-ambiente-container" onclick="toggleModalAmbienteDropdown()">
+                                    <span id="modal-ambiente-selected" class="text-gray-500">Selecione os ambientes</span>
+                                    <i class="fas fa-chevron-down text-gray-400"></i>
+                                </div>
+                                <div id="modal-ambiente-dropdown" class="hidden absolute z-10 w-full mt-2 bg-white border border-gray-200 rounded-xl shadow-lg max-h-48 overflow-y-auto">
+                                    <!-- Options será preenchido via JavaScript -->
+                                </div>
+                            </div>
+                            <input type="hidden" id="modal-ambiente" name="modal-ambiente"/>
+                        </div>
+
+                        <!-- Loja -->
+                        <div class="md:col-span-2 lg:col-span-1">
+                            <label class="form-label">
+                                <i class="fas fa-store mr-2 text-primary"></i>Loja*
+                            </label>
+                            <select id="modal-loja" required class="form-control">
+                                <option value="">Selecione a loja</option>
+                                <option value="Diana D1">Diana D1</option>
+                                <option value="Diana D2">Diana D2</option>
+                                <option value="Diana D3">Diana D3</option>
+                                <option value="Diana D4">Diana D4</option>
+                                <option value="Marquise Planejados">Marquise Planejados</option>
+                                <option value="By Estilo">By Estilo</option>
+                                <option value="Anfelle">Anfelle</option>
+                                <option value="Planejados">Planejados</option>
+                                <option value="Rassul Planejados">Rassul Planejados</option>
+                                <option value="Miralli Móveis">Miralli Móveis</option>
+                                <option value="Outros">Outros</option>
+                            </select>
+                        </div>
+
+                        <!-- Data e Horário -->
+                        <div class="md:col-span-2 lg:col-span-1">
+                            <label class="form-label">
+                                <i class="fas fa-calendar mr-2 text-primary"></i>Data*
+                            </label>
+                            <input type="date" id="modal-data" required class="form-control">
+                        </div>
+                        <div class="md:col-span-2 lg:col-span-1">
+                            <label class="form-label">
+                                <i class="fas fa-clock mr-2 text-primary"></i>Horário*
+                            </label>
+                            <input type="time" id="modal-horario" required class="form-control">
+                        </div>
+                    </div>
+
+                    <!-- Endereço -->
+                    <div class="space-y-4">
+                        <h4 class="text-lg font-semibold text-gray-800 border-b pb-2">
+                            <i class="fas fa-map-marker-alt mr-2 text-primary"></i>Endereço
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="form-label">CEP*</label>
+                                <input type="text" id="modal-cep" required placeholder="00000-000" onblur="buscarModalEndereco()" class="form-control">
+                            </div>
+                            <div>
+                                <label class="form-label">Número*</label>
+                                <input type="text" id="modal-numero" required placeholder="123" class="form-control">
+                            </div>
+                            <div>
+                                <label class="form-label">Complemento</label>
+                                <input type="text" id="modal-complemento" placeholder="Apto 45, Bloco B" class="form-control">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="form-label">Logradouro*</label>
+                                <input type="text" id="modal-logradouro" required readonly class="form-control bg-gray-50">
+                            </div>
+                            <div>
+                                <label class="form-label">Bairro*</label>
+                                <input type="text" id="modal-bairro" required readonly class="form-control bg-gray-50">
+                            </div>
+                            <div>
+                                <label class="form-label">Cidade*</label>
+                                <input type="text" id="modal-cidade" required readonly class="form-control bg-gray-50">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Status e Observações -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="form-label">
+                                <i class="fas fa-info-circle mr-2 text-primary"></i>Status
+                            </label>
+                            <select id="modal-status" class="form-control">
+                                <option value="agendado">Agendado</option>
+                                <option value="finalizado">Finalizado</option>
+                                <option value="cancelado">Cancelado</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label">
+                                <i class="fas fa-sticky-note mr-2 text-primary"></i>Observações
+                            </label>
+                            <textarea id="modal-observacao" rows="3" class="form-control resize-none" placeholder="Informações adicionais sobre o agendamento..."></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Footer do Modal -->
+            <div class="modal-footer">
+                <button type="button" onclick="closeCreateEditModal()" class="btn btn-secondary">
+                    <i class="fas fa-times"></i>
+                    <span>Confirmar Cancelamento</span>
+                </button>
+                <button type="submit" form="create-edit-form" class="btn btn-primary">
+                    <i class="fas fa-save"></i>
+                    <span>Atualizar Agendamento</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para visualizar detalhes -->
+    <div id="view-modal" class="fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center p-2 sm:p-4 z-50 modal">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl mx-2 sm:mx-4 max-h-[95vh] sm:max-h-[90vh] overflow-hidden modal-content transform transition-all duration-300 scale-95 opacity-0">
+            <!-- Header do Modal -->
+            <div class="modal-header">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-xl font-bold flex items-center">
+                        <i class="fas fa-eye mr-3"></i>
+                        Detalhes do Agendamento
+                    </h3>
+                    <button onclick="closeViewModal()" class="text-white hover:text-gray-200 transition-colors p-2 hover:bg-white hover:bg-opacity-20 rounded-lg">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Body do Modal -->
+            <div class="modal-body overflow-y-auto max-h-[calc(90vh-80px)]">
+                <div id="view-content" class="space-y-6">
+                    <!-- Informações Principais -->
+                    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-xl border border-blue-100">
+                        <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                            <i class="fas fa-user-circle mr-2 text-primary"></i>
+                            Informações do Cliente
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="form-label">Nome do Cliente</label>
+                                <p id="view-nome" class="text-gray-900 font-medium text-lg bg-white px-3 py-2 rounded-lg border border-gray-200"></p>
+                            </div>
+                            <div>
+                                <label class="form-label">Telefone</label>
+                                <p id="view-telefone" class="text-gray-900 font-medium text-lg bg-white px-3 py-2 rounded-lg border border-gray-200"></p>
+                            </div>
+                            <div>
+                                <label class="form-label">Email</label>
+                                <p id="view-email" class="text-gray-900 font-medium text-lg bg-white px-3 py-2 rounded-lg border border-gray-200"></p>
+                            </div>
+                            <div>
+                                <label class="form-label">Status</label>
+                                <p id="view-status" class="font-medium text-lg px-3 py-2 rounded-lg border"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Informações do Agendamento -->
+                    <div class="bg-gradient-to-r from-green-50 to-emerald-50 p-6 rounded-xl border border-green-100">
+                        <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                            <i class="fas fa-calendar-check mr-2 text-success"></i>
+                            Detalhes do Agendamento
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="form-label">Tipo de Imóvel</label>
+                                <p id="view-tipo-imovel" class="text-gray-900 font-medium text-lg bg-white px-3 py-2 rounded-lg border border-gray-200"></p>
+                            </div>
+                            <div>
+                                <label class="form-label">Ambientes</label>
+                                <p id="view-ambiente" class="text-gray-900 font-medium text-lg bg-white px-3 py-2 rounded-lg border border-gray-200"></p>
+                            </div>
+                            <div>
+                                <label class="form-label">Loja</label>
+                                <p id="view-loja" class="text-gray-900 font-medium text-lg bg-white px-3 py-2 rounded-lg border border-gray-200"></p>
+                            </div>
+                            <div>
+                                <label class="form-label">Data</label>
+                                <p id="view-data" class="text-gray-900 font-medium text-lg bg-white px-3 py-2 rounded-lg border border-gray-200"></p>
+                            </div>
+                            <div>
+                                <label class="form-label">Horário</label>
+                                <p id="view-horario" class="text-gray-900 font-medium text-lg bg-white px-3 py-2 rounded-lg border border-gray-200"></p>
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="form-label">Horário do Agendamento</label>
+                                <p id="view-horario-agendamento" class="text-gray-900 font-medium text-lg bg-white px-3 py-2 rounded-lg border border-gray-200"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Endereço -->
+                    <div class="bg-gradient-to-r from-purple-50 to-pink-50 p-6 rounded-xl border border-purple-100">
+                        <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                            <i class="fas fa-map-marker-alt mr-2 text-primary"></i>
+                            Endereço
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div>
+                                <label class="form-label">CEP</label>
+                                <p id="view-cep" class="text-gray-900 font-medium text-lg bg-white px-3 py-2 rounded-lg border border-gray-200"></p>
+                            </div>
+                            <div>
+                                <label class="form-label">Número</label>
+                                <p id="view-numero" class="text-gray-900 font-medium text-lg bg-white px-3 py-2 rounded-lg border border-gray-200"></p>
+                            </div>
+                            <div>
+                                <label class="form-label">Complemento</label>
+                                <p id="view-complemento" class="text-gray-900 font-medium text-lg bg-white px-3 py-2 rounded-lg border border-gray-200"></p>
+                            </div>
+                            <div>
+                                <label class="form-label">Logradouro</label>
+                                <p id="view-logradouro" class="text-gray-900 font-medium text-lg bg-white px-3 py-2 rounded-lg border border-gray-200"></p>
+                            </div>
+                            <div>
+                                <label class="form-label">Bairro</label>
+                                <p id="view-bairro" class="text-gray-900 font-medium text-lg bg-white px-3 py-2 rounded-lg border border-gray-200"></p>
+                            </div>
+                            <div>
+                                <label class="form-label">Cidade</label>
+                                <p id="view-cidade" class="text-gray-900 font-medium text-lg bg-white px-3 py-2 rounded-lg border border-gray-200"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Observações -->
+                    <div class="bg-gradient-to-r from-yellow-50 to-orange-50 p-6 rounded-xl border border-yellow-100">
+                        <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                            <i class="fas fa-sticky-note mr-2 text-warning"></i>
+                            Observações
+                        </h4>
+                        <p id="view-observacao" class="text-gray-900 font-medium text-lg bg-white px-3 py-2 rounded-lg border border-gray-200 min-h-[60px]"></p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Footer do Modal -->
+            <div class="modal-footer">
+                <button onclick="closeViewModal()" class="btn btn-primary">
+                    <i class="fas fa-check"></i>
+                    <span>Fechar</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast de notificação -->
+    <div id="toast" class="fixed top-4 right-4 left-4 sm:left-auto bg-green-500 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg shadow-lg transform translate-x-full transition-transform duration-300 z-50 max-w-sm mx-auto sm:mx-0">
+        <div class="flex items-center justify-center sm:justify-start">
+            <i class="fas fa-check-circle mr-2 flex-shrink-0"></i>
+            <span id="toast-message" class="text-sm sm:text-base text-center sm:text-left"></span>
+        </div>
+    </div>
+
+    <script>
+        // Dados globais
+        let agendamentos = JSON.parse(localStorage.getItem('agendamentos')) || [];
+        let filteredAgendamentos = [];
+        let selectedIds = new Set();
+        let currentPage = 1;
+        let itemsPerPage = 10;
+        let editingId = null;
+        let statusChart = null;
+        let selectedAmbientes = [];
+        let modalSelectedAmbientes = [];
+
+        // Ambientes por tipo de imóvel
+        const ambientesPorTipo = {
+            casa: [
+                'Sala de Estar',
+                'Sala de Jantar',
+                'Cozinha',
+                'Dormitório Casal',
+                'Dormitório Solteiro',
+                'Banheiro Social',
+                'Banheiro Suíte',
+                'Área de Serviço',
+                'Escritório',
+                'Área Gourmet',
+                'Garagem',
+                'Quintal',
+                'Varanda',
+                'Despensa',
+                'Closet'
+            ],
+            apartamento: [
+                'Sala de Estar',
+                'Sala de Jantar',
+                'Cozinha',
+                'Dormitório Casal',
+                'Dormitório Solteiro',
+                'Banheiro Social',
+                'Banheiro Suíte',
+                'Área de Serviço',
+                'Escritório',
+                'Varanda',
+                'Sacada',
+                'Closet',
+                'Área Gourmet'
+            ]
+        };
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            showSection('form');
+            updateDashboard();
+            filtrarAgendamentos();
+            
+            // Define data mínima como hoje
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('data').setAttribute('min', today);
+            document.getElementById('modal-data').setAttribute('min', today);
+
+            // Event listeners
+            document.getElementById('agendamento-form').addEventListener('submit', salvarAgendamento);
+            // Event listener do create-edit-form movido para script.js
+
+            // Máscaras nos formulários
+            setupMasks();
+        });
+
+        // Configurar máscaras
+        function setupMasks() {
+            // Máscara para telefone - formulário principal
+            document.getElementById('telefone').addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                value = value.replace(/(\d{2})(\d)/, '($1) $2');
+                value = value.replace(/(\d{5})(\d)/, '$1-$2');
+                e.target.value = value;
+            });
+
+            // Máscara para telefone - modal
+            document.getElementById('modal-telefone').addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                value = value.replace(/(\d{2})(\d)/, '($1) $2');
+                value = value.replace(/(\d{5})(\d)/, '$1-$2');
+                e.target.value = value;
+            });
+
+            // Máscara para CEP - formulário principal
+            document.getElementById('cep').addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                value = value.replace(/(\d{5})(\d)/, '$1-$2');
+                e.target.value = value;
+            });
+
+            // Máscara para CEP - modal
+            document.getElementById('modal-cep').addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                value = value.replace(/(\d{5})(\d)/, '$1-$2');
+                e.target.value = value;
+            });
+        }
+
+        // Navegação entre seções
+        function showSection(section) {
+            document.querySelectorAll('.section').forEach(s => s.classList.add('hidden'));
+            document.getElementById(section + '-section').classList.remove('hidden');
+            
+            if (section === 'dashboard') {
+                updateDashboard();
+                renderChart();
+            } else if (section === 'list') {
+                renderAgendamentos();
+            }
+        }
+
+        // Toggle menu mobile
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            const icon = document.getElementById('mobile-menu-icon');
+            
+            if (mobileMenu.classList.contains('hidden')) {
+                mobileMenu.classList.remove('hidden');
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            } else {
+                mobileMenu.classList.add('hidden');
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+        }
+
+        // Atualizar ambientes baseado no tipo de imóvel
+        function updateAmbientes() {
+            const tipoImovel = document.getElementById('tipo-imovel').value;
+            const dropdown = document.getElementById('ambiente-dropdown');
+            const selected = document.getElementById('ambiente-selected');
+            
+            selectedAmbientes = [];
+            dropdown.innerHTML = '';
+            selected.textContent = tipoImovel ? 'Selecione os ambientes' : 'Primeiro selecione o tipo de imóvel';
+            document.getElementById('ambiente').value = '';
+            
+            if (tipoImovel && ambientesPorTipo[tipoImovel]) {
+                ambientesPorTipo[tipoImovel].forEach(ambiente => {
+                    const option = document.createElement('div');
+                    option.className = 'px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center';
+                    option.innerHTML = `
+                        <input type="checkbox" class="mr-2" id="amb-${ambiente}" onchange="toggleAmbiente('${ambiente}')">
+                        <label for="amb-${ambiente}" class="cursor-pointer flex-1">${ambiente}</label>
+                    `;
+                    dropdown.appendChild(option);
+                });
+            }
+        }
+
+        // Toggle dropdown de ambientes
+        function toggleAmbienteDropdown() {
+            const dropdown = document.getElementById('ambiente-dropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        // Toggle ambiente selecionado
+        function toggleAmbiente(ambiente) {
+            const index = selectedAmbientes.indexOf(ambiente);
+            if (index > -1) {
+                selectedAmbientes.splice(index, 1);
+            } else {
+                selectedAmbientes.push(ambiente);
+            }
+            updateAmbienteDisplay();
+        }
+
+        // Atualizar display dos ambientes selecionados
+        function updateAmbienteDisplay() {
+            const selected = document.getElementById('ambiente-selected');
+            const hiddenInput = document.getElementById('ambiente');
+            
+            if (selectedAmbientes.length === 0) {
+                selected.textContent = 'Selecione os ambientes';
+                selected.className = 'text-gray-500';
+                hiddenInput.value = '';
+            } else {
+                selected.textContent = selectedAmbientes.join(', ');
+                selected.className = 'text-gray-900';
+                hiddenInput.value = selectedAmbientes.join(', ');
+            }
+        }
+
+        // Atualizar horário do agendamento
+        function updateAgendamentoDateTime() {
+            console.log('🕐 updateAgendamentoDateTime() chamada');
+            const data = document.getElementById('data').value;
+            const horario = document.getElementById('horario').value;
+            const horarioAgendamento = document.getElementById('horario-agendamento');
+            
+            console.log('Data:', data, 'Horário:', horario);
+            
+            if (data && horario) {
+                // Criar data no fuso horário de Brasília
+                const dataBrasilia = new Date(data + 'T' + horario + ':00');
+                const options = {
+                    timeZone: 'America/Sao_Paulo',
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                };
+                
+                const dataFormatadaBrasilia = dataBrasilia.toLocaleString('pt-BR', options);
+                const [dataStr, horaStr] = dataFormatadaBrasilia.split(' ');
+                
+                console.log('Data formatada:', dataFormatadaBrasilia);
+                console.log('Horário agendamento:', `${dataStr} às ${horaStr}`);
+                
+                horarioAgendamento.value = `${dataStr} às ${horaStr}`;
+            } else {
+                horarioAgendamento.value = '';
+            }
+        }
+
+        // Atualizar ambientes no modal
+        function updateModalAmbientes() {
+            const tipoImovel = document.getElementById('modal-tipo-imovel').value;
+            const dropdown = document.getElementById('modal-ambiente-dropdown');
+            const selected = document.getElementById('modal-ambiente-selected');
+            
+            modalSelectedAmbientes = [];
+            dropdown.innerHTML = '';
+            selected.textContent = tipoImovel ? 'Selecione os ambientes' : 'Primeiro selecione o tipo de imóvel';
+            document.getElementById('modal-ambiente').value = '';
+            
+            if (tipoImovel && ambientesPorTipo[tipoImovel]) {
+                ambientesPorTipo[tipoImovel].forEach(ambiente => {
+                    const option = document.createElement('div');
+                    option.className = 'px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center';
+                    option.innerHTML = `
+                        <input type="checkbox" class="mr-2" id="modal-amb-${ambiente}" onchange="toggleModalAmbiente('${ambiente}')">
+                        <label for="modal-amb-${ambiente}" class="cursor-pointer flex-1">${ambiente}</label>
+                    `;
+                    dropdown.appendChild(option);
+                });
+            }
+        }
+
+        // Toggle dropdown de ambientes do modal
+        function toggleModalAmbienteDropdown() {
+            const dropdown = document.getElementById('modal-ambiente-dropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        // Toggle ambiente selecionado no modal
+        function toggleModalAmbiente(ambiente) {
+            const index = modalSelectedAmbientes.indexOf(ambiente);
+            if (index > -1) {
+                modalSelectedAmbientes.splice(index, 1);
+            } else {
+                modalSelectedAmbientes.push(ambiente);
+            }
+            updateModalAmbienteDisplay();
+        }
+
+        // Atualizar display dos ambientes selecionados no modal
+        function updateModalAmbienteDisplay() {
+            const selected = document.getElementById('modal-ambiente-selected');
+            const hiddenInput = document.getElementById('modal-ambiente');
+            
+            if (modalSelectedAmbientes.length === 0) {
+                selected.textContent = 'Selecione os ambientes';
+                selected.className = 'text-gray-500';
+                hiddenInput.value = '';
+            } else {
+                selected.textContent = modalSelectedAmbientes.join(', ');
+                selected.className = 'text-gray-900';
+                hiddenInput.value = modalSelectedAmbientes.join(', ');
+            }
+        }
+
+        // Atualizar horário do agendamento no modal
+        function updateModalAgendamentoDateTime() {
+            const data = document.getElementById('modal-data').value;
+            const horario = document.getElementById('modal-horario').value;
+            const horarioAgendamento = document.getElementById('modal-horario-agendamento');
+            
+            if (data && horario) {
+                // Criar data no fuso horário de Brasília
+                const dataBrasilia = new Date(data + 'T' + horario + ':00');
+                const options = {
+                    timeZone: 'America/Sao_Paulo',
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                };
+                
+                const dataFormatadaBrasilia = dataBrasilia.toLocaleString('pt-BR', options);
+                const [dataStr, horaStr] = dataFormatadaBrasilia.split(' ');
+                
+                horarioAgendamento.value = `${dataStr} às ${horaStr}`;
+            } else {
+                horarioAgendamento.value = '';
+            }
+        }
+
+        // Buscar endereço por CEP
+        async function buscarEndereco() {
+            const cep = document.getElementById('cep').value.replace(/\D/g, '');
+            
+            if (cep.length !== 8) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+                const data = await response.json();
+                
+                if (!data.erro) {
+                    document.getElementById('logradouro').value = data.logradouro;
+                    document.getElementById('bairro').value = data.bairro;
+                    document.getElementById('cidade').value = `${data.localidade} - ${data.uf}`;
+                } else {
+                    showNotification('CEP não encontrado', 'error');
+                }
+            } catch (error) {
+                showNotification('Erro ao buscar CEP', 'error');
+            }
+        }
+
+        // Buscar endereço por CEP no modal
+        async function buscarEnderecoModal() {
+            const cep = document.getElementById('modal-cep').value.replace(/\D/g, '');
+            
+            if (cep.length !== 8) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+                const data = await response.json();
+                
+                if (!data.erro) {
+                    document.getElementById('modal-logradouro').value = data.logradouro;
+                    document.getElementById('modal-bairro').value = data.bairro;
+                    document.getElementById('modal-cidade').value = `${data.localidade} - ${data.uf}`;
+                } else {
+                    showNotification('CEP não encontrado', 'error');
+                }
+            } catch (error) {
+                showNotification('Erro ao buscar CEP', 'error');
+            }
+        }
+
+        // Salvar agendamento
+        async function salvarAgendamento(e) {
+            console.log('🚀 FUNÇÃO salvarAgendamento CHAMADA!');
+            e.preventDefault();
+            console.log('=== FUNÇÃO salvarAgendamento CHAMADA ===');
+            
+            const data = document.getElementById('data').value;
+            const horario = document.getElementById('horario').value;
+            const nomeCliente = document.getElementById('nome-cliente').value;
+            
+            console.log('📋 Dados capturados:');
+            console.log('- data:', data);
+            console.log('- horario:', horario);
+            console.log('- nome_cliente:', nomeCliente);
+            
+            // Validação básica
+            if (!data || !horario) {
+                console.log('❌ Validação falhou: data ou horário vazio');
+                showNotification('Preencha data e horário', 'error');
+                return;
+            }
+            
+            if (!nomeCliente) {
+                console.log('❌ Validação falhou: nome do cliente vazio');
+                showNotification('Preencha o nome do cliente', 'error');
+                return;
+            }
+
+            // === VALIDAÇÃO DE ROTEIRIZAÇÃO ===
+            console.log('🔍 Validando horário com roteirização...');
+            const validacaoRoteiro = await validarHorarioRoteiro(data, horario);
+            
+            if (!validacaoRoteiro.valido) {
+                console.log('❌ Validação de roteirização falhou:', validacaoRoteiro.motivo);
+                showNotification(validacaoRoteiro.motivo, 'error');
+                
+                // Sugerir próximo horário disponível
+                const sugestao = sugerirProximoHorarioDisponivel(data, cep);
+                if (typeof sugestao === 'string') {
+                    showNotification(`Sugestão: ${sugestao}`, 'info');
+                } else {
+                    showNotification(sugestao.mensagem, 'info');
+                }
+                
+                return;
+            }
+            
+            console.log('✅ Validação de roteirização OK');
+
+            // Obter valores dos campos sem fallback
+            const telefone = document.getElementById('telefone').value;
+            const email = document.getElementById('email').value;
+            const tipoImovel = document.getElementById('tipo-imovel').value;
+            const ambiente = document.getElementById('ambiente').value;
+            const loja = document.getElementById('loja').value;
+            const cep = document.getElementById('cep').value;
+            const numero = document.getElementById('numero').value;
+            const logradouro = document.getElementById('logradouro').value;
+            const bairro = document.getElementById('bairro').value;
+            const cidade = document.getElementById('cidade').value;
+
+            // Validação completa dos campos obrigatórios
+            const camposObrigatorios = {
+                'Nome do Cliente': nomeCliente,
+                'Telefone': telefone,
+                'E-mail': email,
+                'Tipo de Imóvel': tipoImovel,
+                'Ambientes': ambiente,
+                'Loja': loja,
+                'Data': data,
+                'Horário': horario,
+                'CEP': cep,
+                'Número': numero,
+                'Logradouro': logradouro,
+                'Bairro': bairro,
+                'Cidade': cidade
+            };
+
+            const camposVazios = Object.entries(camposObrigatorios)
+                .filter(([campo, valor]) => !valor || valor.trim() === '')
+                .map(([campo]) => campo);
+
+            // Validação específica para ambientes
+            console.log('🔍 Verificando ambientes...');
+            console.log('- selectedAmbientes:', selectedAmbientes);
+            console.log('- typeof selectedAmbientes:', typeof selectedAmbientes);
+            console.log('- Array.isArray(selectedAmbientes):', Array.isArray(selectedAmbientes));
+            
+            // Garantir que selectedAmbientes seja um array
+            if (!Array.isArray(selectedAmbientes)) {
+                selectedAmbientes = [];
+            }
+            
+            if (selectedAmbientes.length === 0) {
+                camposVazios.push('Ambientes');
+            }
+
+            if (camposVazios.length > 0) {
+                console.log('❌ Validação falhou: campos vazios:', camposVazios);
+                console.log('❌ selectedAmbientes:', selectedAmbientes);
+                console.log('❌ ambiente value:', ambiente);
+                showNotification(`Preencha os campos obrigatórios: ${camposVazios.join(', ')}`, 'error');
+                return;
+            }
+            
+            const dataFormatada = new Date(data + 'T00:00:00').toLocaleDateString('pt-BR');
+            const horarioAgendamento = `${dataFormatada} às ${horario}`;
+            
+            console.log('✅ Validação OK, preparando para enviar...');
+            console.log('📋 Resumo dos dados:');
+            console.log('- selectedAmbientes:', selectedAmbientes);
+            console.log('- ambiente value:', ambiente);
+            console.log('- selectedAmbientes.length:', selectedAmbientes.length);
+            
+            const agendamento = {
+                nome_cliente: nomeCliente.trim(),
+                telefone: telefone.trim(),
+                email: email.trim(),
+                tipo_imovel: tipoImovel.trim(),
+                ambiente: selectedAmbientes.join(', '), // Usar os ambientes selecionados
+                loja: loja.trim(),
+                data: data,
+                horario: horario,
+                horario_agendamento: horarioAgendamento,
+                cep: cep.trim(),
+                numero: numero.trim(),
+                logradouro: logradouro.trim(),
+                bairro: bairro.trim(),
+                cidade: cidade.trim(),
+                complemento: document.getElementById('complemento').value.trim() || '',
+                observacao: document.getElementById('observacao').value.trim() || '',
+                status: 'agendado'
+            };
+            
+            console.log('📤 Agendamento a ser enviado:', agendamento);
+
+            console.log('Enviando agendamento:', agendamento);
+
+            try {
+                const response = await fetch('http://localhost:3000/api/agendamentos', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(agendamento)
+                });
+
+                const result = await response.json();
+                console.log('Resposta da API:', result);
+
+                if (response.ok) {
+                    showNotification('Agendamento criado com sucesso!');
+                    
+                    // Resetar formulário com segurança
+                    const form = document.getElementById('agendamento-form');
+                    if (form) {
+                        form.reset();
+                    }
+                    
+                    // Limpar campos específicos
+                    const ambienteInput = document.getElementById('ambiente');
+                    if (ambienteInput) {
+                        ambienteInput.value = '';
+                    }
+                    
+                    const horarioAgendamentoInput = document.getElementById('horario-agendamento');
+                    if (horarioAgendamentoInput) {
+                        horarioAgendamentoInput.value = '';
+                    }
+                    
+                    // Resetar variáveis de controle
+                    selectedAmbientes = [];
+                    updateAmbienteDisplay();
+                    
+                    // Carregar agendamentos e redirecionar
+                    await loadAgendamentos();
+                    showSection('list'); // Redirecionar para a página de agendamentos
+                } else {
+                    showNotification(result.error || 'Erro ao criar agendamento', 'error');
+                }
+            } catch (error) {
+                console.error('Erro na requisição:', error);
+                showNotification('Erro de conexão com o servidor', 'error');
+            }
+        }
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM carregado - Inicializando sistema');
+            
+            // Verificar login
+            const loggedIn = localStorage.getItem('loggedIn');
+            if (!loggedIn) {
+                document.getElementById('login-screen').classList.remove('hidden');
+                document.getElementById('main-content').classList.add('hidden');
+            } else {
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('main-content').classList.remove('hidden');
+                loadAgendamentos();
+            }
+        });
+
+        // Configurar eventos
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (username.toLowerCase() === 'admin' && password === '1234') {
+                localStorage.setItem('loggedIn', 'true');
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('main-content').classList.remove('hidden');
+                document.getElementById('login-error').classList.add('hidden');
+                loadAgendamentos();
+            } else {
+                document.getElementById('login-error').classList.remove('hidden');
+            }
+        });
+    </script>
+
+    </div> <!-- End of main-content -->
+
+    <!-- Footer Profissional -->
+    <footer class="bg-gray-900 text-white mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <!-- Logo e redes sociais -->
+                <div class="flex items-center space-x-4 mb-2 md:mb-0">
+                    <div class="flex items-center">
+                        <i class="fas fa-ruler-combined text-lg text-purple-400 mr-2"></i>
+                        <h3 class="text-sm font-bold">Agenda Medição Rodrigo</h3>
+                    </div>
+                    <div class="flex space-x-2 social-icons">
+                        <a href="#" class="text-gray-400 hover:text-purple-400 transition-colors">
+                            <i class="fab fa-facebook-f text-sm"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-purple-400 transition-colors">
+                            <i class="fab fa-instagram text-sm"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-purple-400 transition-colors">
+                            <i class="fab fa-whatsapp text-sm"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Links e contato -->
+                <div class="flex items-center space-x-4 text-xs">
+                    <a href="#" onclick="showSection('list')" class="text-gray-300 hover:text-purple-400 transition-colors">
+                        Agendamentos
+                    </a>
+                    <a href="#" onclick="showSection('form')" class="text-gray-300 hover:text-purple-400 transition-colors">
+                        Novo
+                    </a>
+                    <span class="text-gray-400">|</span>
+                    <span class="text-gray-400">(11) 96081-4357</span>
+                    <span class="text-gray-400">|</span>
+                    <a href="#" onclick="logout()" class="text-gray-300 hover:text-purple-400 transition-colors">
+                        Sair
+                    </a>
+                </div>
+            </div>
+
+            <!-- Copyright -->
+            <div class="border-t border-gray-800 mt-2 pt-2 text-center">
+                <div class="text-gray-500 text-xs">
+                    © 2026 Agenda Medição Rodrigo - Todos os direitos reservados
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Popup de Confirmação -->
+    <div id="confirm-popup" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white rounded-2xl shadow-2xl p-6 max-w-sm mx-4 transform transition-all duration-300 scale-95 opacity-0" id="confirm-content">
+            <div class="flex items-center mb-4">
+                <div class="flex-shrink-0 w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
+                    <i class="fas fa-exclamation-triangle text-yellow-600 text-xl"></i>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-lg font-semibold text-gray-900" id="confirm-title">Confirmar Exclusão</h3>
+                    <p class="text-sm text-gray-600" id="confirm-message">Tem certeza que deseja realizar esta ação?</p>
+                </div>
+            </div>
+            <div class="flex justify-end space-x-3">
+                <button onclick="cancelConfirm()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors">
+                    Cancelar
+                </button>
+                <button id="confirm-button" onclick="executeConfirm()" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+                    Confirmar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup de Notificação -->
+    <div id="notification-popup" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white rounded-2xl shadow-2xl p-6 max-w-sm mx-4 transform transition-all duration-300 scale-95 opacity-0" id="notification-content">
+            <div class="flex items-center mb-4">
+                <div class="flex-shrink-0 w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                    <i class="fas fa-check text-green-600 text-xl"></i>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-lg font-semibold text-gray-900" id="notification-title">Sucesso!</h3>
+                    <p class="text-sm text-gray-600" id="notification-message">Agendamento alterado com sucesso!.</p>
+                </div>
+            </div>
+            <div class="flex justify-end">
+                <button onclick="closeNotification()" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                    OK
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup de Agendamento Duplicado -->
+    <div id="duplicidade-popup" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white rounded-2xl shadow-2xl p-6 max-w-2xl mx-4 transform transition-all duration-300 scale-95 opacity-0" id="duplicidade-content">
+            <div class="flex items-center mb-4">
+                <div class="flex-shrink-0 w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
+                    <i class="fas fa-exclamation-triangle text-yellow-600 text-xl"></i>
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Agendamento Duplicado</h3>
+                    <p class="text-sm text-gray-600">Já existe um agendamento para este endereço na mesma data.</p>
+                </div>
+            </div>
+            
+            <div id="duplicidade-info" class="mb-6">
+                <!-- Conteúdo será inserido dinamicamente -->
+            </div>
+            
+            <div class="flex justify-end">
+                <button onclick="closeDuplicidadePopup()" class="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors">
+                    Entendido
+                </button>
+            </div>
+        </div>
+    </div>
+
+</body></html>
